@@ -10,16 +10,16 @@ It's inspired by the official [Slack integration][slack] for Linear.
 
 ## Installation
 
-Visit [ldw.screfy.com][ui] and follow the instructions.
+Visit [linear-discord-webhook.vercel.app][ui] and follow the instructions.
 
 ## How does it work?
 
 It's really simple. We form a URL that contains the Discord webhook ID, Discord webhook token, Linear API token, and use that as our Linear webhook URL, e.g.:
 
 ```
-https://ldw.screfy.com/api/webhook?webhookId=123&webhookToken=abc&linearToken=lin_api_abcdefgh
+https://linear-discord-webhook.vercel.app/api/webhook?webhookId=123&webhookToken=abc&linearToken=lin_api_abcdefgh
 ```
 
 [vercel]: https://vercel.com
 [slack]: https://linear.app/docs/slack
-[ui]: https://ldw.screfy.com
+[ui]: https://linear-discord-webhook.vercel.app
