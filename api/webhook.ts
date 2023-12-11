@@ -1,4 +1,4 @@
-import { LinearClient } from '@linear/sdk';
+import { LinearClient, User } from '@linear/sdk';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MessageEmbed } from 'discord.js';
 import { z, ZodError, ZodIssue } from 'zod';
@@ -80,7 +80,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			timestamp: body.createdAt
 		});
 		const linear = new LinearClient({ apiKey: linearToken });
-		let assignee: Assignee | null = null;
+		let assignee: User | null = null;
 
 		switch (body.type) {
 			case Model.ISSUE: {
@@ -138,11 +138,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			case Model.COMMENT: {
 				if (body.action === Action.CREATE) {
 					const linearUser = await linear.user(body.data.userId);
+					const linearIssue = await linear.issue(body.data.issue.id);
 					const identifier = parseIdentifier(body.url);
 
-					// if (body.data.issue) {
-					// 	assignee = await linear.user(body.data.issue.assignee.id);
-					// }
+					if (linearIssue.assignee) {
+						assignee = await linearIssue.assignee;
+					}
 
 					embed
 						.setTitle(`${identifier} ${body.data.issue.title}`)

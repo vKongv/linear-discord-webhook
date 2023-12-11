@@ -6,6 +6,7 @@ const COMMONS = z.object({
 	body: z.string(),
 	userId: z.string().uuid(),
 	issue: z.object({
+		id: z.string(),
 		title: z.string()
 	})
 });
