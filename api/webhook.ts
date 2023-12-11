@@ -22,10 +22,10 @@ const QUERY_SCHEMA = z.object({
 });
 
 const LINEAR_DISPLAY_NAME_TO_DISCORD_ID = {
-	'Kong': '152805815097491456',
-	'kyo production': '946380955088732160',
-	'James Lee': '289070271523061761',
-	'leehw123@hotmail.com': '181394763683987457'
+	'kong': '152805815097491456',
+	'kyo.production99': '946380955088732160',
+	'james.lee': '289070271523061761',
+	'aki': '181394763683987457'
 };
 
 function parseIdentifier(url: string) {
@@ -71,12 +71,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			timestamp: body.createdAt
 		});
 		const linear = new LinearClient({ apiKey: linearToken });
-		let linearUser;
+		let assignee;
 
 		switch (body.type) {
 			case Model.ISSUE: {
 				if (body.action === Action.CREATE) {
-					linearUser = await linear.user(body.data.creatorId);
+					const linearUser = await linear.user(body.data.creatorId);
 					const identifier = parseIdentifier(body.url);
 					const teamUrl = `${LINEAR_BASE_URL}/team/${body.data.team.key}`;
 
@@ -95,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 						);
 
 					if (body.data.assignee) {
-						const assignee = await linear.user(body.data.assignee.id);
+						assignee = await linear.user(body.data.assignee.id);
 
 						embed.addFields({
 							name: 'Assignee',
@@ -108,8 +108,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 						embed.setDescription(body.data.description);
 					}
 				} else if (body.action === Action.UPDATE && body.updatedFrom?.stateId) {
-					linearUser = await linear.user(body.data.creatorId);
+					const linearUser = await linear.user(body.data.creatorId);
 					const identifier = parseIdentifier(body.url);
+
+					if (body.data.assignee) {
+						assignee = await linear.user(body.data.assignee.id);
+					}
 
 					embed
 						.setTitle(`${identifier} ${body.data.title}`)
@@ -127,6 +131,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 					linearUser = await linear.user(body.data.userId);
 					const identifier = parseIdentifier(body.url);
 
+					if (body.data.issue.assignee) {
+						assignee = await linear.user(body.data.issue.assignee.id);
+					}
+
 					embed
 						.setTitle(`${identifier} ${body.data.issue.title}`)
 						.setURL(body.url)
@@ -141,7 +149,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 		const webhookUrl = `${DISCORD_WEBHOOKS_URL}/${webhookId}/${webhookToken}`;
 
-		const discordUserId = LINEAR_DISPLAY_NAME_TO_DISCORD_ID[linearUser.displayName];
+		const discordUserId = LINEAR_DISPLAY_NAME_TO_DISCORD_ID[assignee.displayName];
 		await fetch(webhookUrl, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
