@@ -109,7 +109,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 					}
 				} else if (body.action === Action.UPDATE && body.updatedFrom?.stateId) {
 					linearUser = await linear.user(body.data.creatorId);
-					linearUser.username
 					const identifier = parseIdentifier(body.url);
 
 					embed
@@ -147,7 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
-				content: `👋 <@${discordUserId}>.`,
+				content: `👋 <@${discordUserId}>. ${linearUser.displayName} - ${linearUser.name} - ${linearUser.email}`,
 				username: WEBHOOK_USERNAME,
 				avatar_url: WEBHOOK_AVATAR_URL,
 				embeds: [embed.toJSON()]
