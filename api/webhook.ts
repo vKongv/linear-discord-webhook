@@ -128,7 +128,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			}
 			case Model.COMMENT: {
 				if (body.action === Action.CREATE) {
-					linearUser = await linear.user(body.data.userId);
+					const linearUser = await linear.user(body.data.userId);
 					const identifier = parseIdentifier(body.url);
 
 					if (body.data.issue.assignee) {
@@ -154,7 +154,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
-				content: `👋 <@${discordUserId}>. ${linearUser.displayName} - ${linearUser.name} - ${linearUser.email}`,
+				content: `👋 <@${discordUserId}>. ${assignee.displayName} - ${assignee.name} - ${assignee.email}`,
 				username: WEBHOOK_USERNAME,
 				avatar_url: WEBHOOK_AVATAR_URL,
 				embeds: [embed.toJSON()]
