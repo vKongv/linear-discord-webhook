@@ -142,7 +142,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 		const webhookUrl = `${DISCORD_WEBHOOKS_URL}/${webhookId}/${webhookToken}`;
 
-		const discordUserId = LINEAR_USERNAME_TO_DISCORD_ID[linearUser.displayName];
+		const discordUserId = LINEAR_DISPLAY_NAME_TO_DISCORD_ID[linearUser.displayName];
 		await fetch(webhookUrl, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
