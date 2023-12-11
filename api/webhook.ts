@@ -151,7 +151,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 						.setURL(body.url)
 						.setAuthor({ name: 'New comment' })
 						.setFooter({ text: actionUser.name, iconURL: actionUser.avatarUrl })
-						.addFields([{ name: 'Comment', value: JSON.stringify(req.body.data.issue, null, 2) }])
 						.setDescription(body.data.body);
 				}
 
