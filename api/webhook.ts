@@ -73,7 +73,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 					const teamUrl = `${LINEAR_BASE_URL}/team/${body.data.team.key}`;
 
 					embed
-						.setTitle(`${identifier} ${body.data.title} <@152805815097491456>.`)
+						.setTitle(`${identifier} ${body.data.title}`)
 						.setURL(body.url)
 						.setAuthor({ name: 'New issue added' })
 						.setFooter({ text: creator.name, iconURL: creator.avatarUrl })
@@ -137,6 +137,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
+				content: "👋 <@152805815097491456>.",
 				username: WEBHOOK_USERNAME,
 				avatar_url: WEBHOOK_AVATAR_URL,
 				embeds: [embed.toJSON()]
