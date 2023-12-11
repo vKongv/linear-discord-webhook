@@ -21,6 +21,13 @@ const QUERY_SCHEMA = z.object({
 	linearToken: z.string()
 });
 
+const LINEAR_USERNAME_TO_DISCORD_ID = {
+	'kong': '152805815097491456',
+	'kyo.production99': '946380955088732160',
+	'james.lee': '289070271523061761',
+	'aki': '181394763683987457'
+};
+
 function parseIdentifier(url: string) {
 	return url.split('/')[5].split('#')[0];
 }
@@ -64,11 +71,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			timestamp: body.createdAt
 		});
 		const linear = new LinearClient({ apiKey: linearToken });
+		let linearUser;
 
 		switch (body.type) {
 			case Model.ISSUE: {
 				if (body.action === Action.CREATE) {
-					const creator = await linear.user(body.data.creatorId);
+					linearUser = await linear.user(body.data.creatorId);
 					const identifier = parseIdentifier(body.url);
 					const teamUrl = `${LINEAR_BASE_URL}/team/${body.data.team.key}`;
 
@@ -76,7 +84,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 						.setTitle(`${identifier} ${body.data.title}`)
 						.setURL(body.url)
 						.setAuthor({ name: 'New issue added' })
-						.setFooter({ text: creator.name, iconURL: creator.avatarUrl })
+						.setFooter({ text: linearUser.name, iconURL: linearUser.avatarUrl })
 						.addFields(
 							{
 								name: 'Team',
@@ -100,7 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 						embed.setDescription(body.data.description);
 					}
 				} else if (body.action === Action.UPDATE && body.updatedFrom?.stateId) {
-					const creator = await linear.user(body.data.creatorId);
+					linearUser = await linear.user(body.data.creatorId);
 					const identifier = parseIdentifier(body.url);
 
 					embed
@@ -108,7 +116,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 						.setURL(body.url)
 						.setAuthor({ name: 'Status changed' })
 						.setColor(body.data.state.color as any)
-						.setFooter({ text: creator.name, iconURL: creator.avatarUrl })
+						.setFooter({ text: linearUser.name, iconURL: linearUser.avatarUrl })
 						.setDescription(`Status: **${body.data.state.name}**`);
 				}
 
@@ -116,14 +124,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			}
 			case Model.COMMENT: {
 				if (body.action === Action.CREATE) {
-					const user = await linear.user(body.data.userId);
+					linearUser = await linear.user(body.data.userId);
 					const identifier = parseIdentifier(body.url);
 
 					embed
 						.setTitle(`${identifier} ${body.data.issue.title}`)
 						.setURL(body.url)
 						.setAuthor({ name: 'New comment' })
-						.setFooter({ text: user.name, iconURL: user.avatarUrl })
+						.setFooter({ text: linearUser.name, iconURL: linearUser.avatarUrl })
 						.setDescription(body.data.body);
 				}
 
@@ -133,11 +141,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 		const webhookUrl = `${DISCORD_WEBHOOKS_URL}/${webhookId}/${webhookToken}`;
 
+		const discordUserId = LINEAR_USERNAME_TO_DISCORD_ID[linearUser.username];
 		await fetch(webhookUrl, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
-				content: "👋 <@152805815097491456>.",
+				content: `👋 <@${discordUserId}>.`,
 				username: WEBHOOK_USERNAME,
 				avatar_url: WEBHOOK_AVATAR_URL,
 				embeds: [embed.toJSON()]
