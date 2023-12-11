@@ -21,11 +21,11 @@ const QUERY_SCHEMA = z.object({
 	linearToken: z.string()
 });
 
-const LINEAR_USERNAME_TO_DISCORD_ID = {
-	'kong': '152805815097491456',
-	'kyo.production99': '946380955088732160',
-	'james.lee': '289070271523061761',
-	'aki': '181394763683987457'
+const LINEAR_DISPLAY_NAME_TO_DISCORD_ID = {
+	'Kong': '152805815097491456',
+	'kyo production': '946380955088732160',
+	'James Lee': '289070271523061761',
+	'leehw123@hotmail.com': '181394763683987457'
 };
 
 function parseIdentifier(url: string) {
@@ -109,6 +109,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 					}
 				} else if (body.action === Action.UPDATE && body.updatedFrom?.stateId) {
 					linearUser = await linear.user(body.data.creatorId);
+					linearUser.username
 					const identifier = parseIdentifier(body.url);
 
 					embed
@@ -141,7 +142,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 		const webhookUrl = `${DISCORD_WEBHOOKS_URL}/${webhookId}/${webhookToken}`;
 
-		const discordUserId = LINEAR_USERNAME_TO_DISCORD_ID[linearUser.username];
+		const discordUserId = LINEAR_USERNAME_TO_DISCORD_ID[linearUser.displayName];
 		await fetch(webhookUrl, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
