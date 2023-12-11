@@ -73,7 +73,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 					const teamUrl = `${LINEAR_BASE_URL}/team/${body.data.team.key}`;
 
 					embed
-						.setTitle(`${identifier} ${body.data.title}`)
+						.setTitle(`${identifier} ${body.data.title} <@152805815097491456>.`)
 						.setURL(body.url)
 						.setAuthor({ name: 'New issue added' })
 						.setFooter({ text: creator.name, iconURL: creator.avatarUrl })
