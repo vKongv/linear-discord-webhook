@@ -34,7 +34,8 @@ const LINEAR_DISPLAY_NAME_TO_DISCORD_ID: LinearDisplayNameToDiscordId = {
 	kong: '152805815097491456',
 	'kyo.production99': '946380955088732160',
 	'james.lee': '289070271523061761',
-	aki: '181394763683987457'
+	aki: '181394763683987457',
+	'junxiong.low': '611578492026486808'
 };
 
 function parseIdentifier(url: string) {
